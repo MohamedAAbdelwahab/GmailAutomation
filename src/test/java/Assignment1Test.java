@@ -1,22 +1,24 @@
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 public class Assignment1Test {
     WebDriver driver;
     Utils util=new Utils();
     PrintStream out = System.out;
-
+    SoftAssert softAssert = new SoftAssert();
+    @AfterClass
+    public void cleanUP()
+    {
+        driver.close(); //Close the browser window
+    }
     @BeforeClass
     public void setup()
     {
@@ -26,56 +28,31 @@ public class Assignment1Test {
         System.setOut(out);
     }
     @Test(priority = 1)
-     public  void LoginPage()  {
-        driver.get("https://mail.google.com/mail/");
-        WebElement email=driver.findElement(By.id("identifierId"));
-        email.sendKeys("AutomationTesting12344@gmail.com");
-        WebElement nextBTN=driver.findElement(By.id("identifierNext"));
-        nextBTN.click();
-        util.waitUntil(driver,By.id("password"));
-        WebElement password=driver.findElement(By.cssSelector("input[class=\"whsOnd zHQkBf\"]"));
-        password.sendKeys("P@ssw0rd1234");
+     public  void OpenGoogleAndSearch()  {
+        driver.get("https://www.google.com/");
+        try
+        {
+            driver.findElement(By.xpath("//*[text()='English']")).click();
+        }
+        catch(Exception e)
+        {
+            System.out.println("No Element Or the page is already in english language");
+        }
+        HomePage page=new HomePage(driver);
+        page.enterSearchKeywordAndSearch();
 
-        util.waitUntil(driver,By.id("passwordNext"));
-        WebElement passwordNext=driver.findElement(By.id("passwordNext"));
-        passwordNext.click();
     }
     @Test(priority = 2)
-    public void MainEmailPage()
+    public void RemoveKeywordAndSearch()
     {
-        util.waitUntil(driver,By.cssSelector(".aic .z0 div"));
-        WebElement composeBTN=driver.findElement(By.cssSelector(".aic .z0 div"));
-        composeBTN.click();
-    }
-
-    @Test(priority = 3)
-    public void ComposePage()
-    {
-        util.waitUntil(driver,By.cssSelector(".oj div textarea"));
-        WebElement tofield=driver.findElement(By.cssSelector(".oj div textarea"));
-        tofield.sendKeys("AutomationTesting12344@gmail.com");
-        util.waitUntil(driver,By.cssSelector(".aoD.az6 input"));
-        WebElement subjectfield=driver.findElement(By.cssSelector(".aoD.az6 input"));
-        subjectfield.sendKeys("Test Mail");
-        util.waitUntil(driver,By.cssSelector(".Ap .Ar.Au"));
-        WebElement emailBody=driver.findElement(By.cssSelector(".Ap .Ar.Au div"));
-        emailBody.sendKeys("Test Email Body");
-        WebElement send=driver.findElement(By.cssSelector(".gU.Up .J-J5-Ji.btA .dC div"));
-        send.click();
-        util.waitUntil(driver,By.cssSelector(".zA.zE .apU.xY"));
-        WebElement star=driver.findElement(By.cssSelector(".zA.zE .apU.xY"));
-        star.click();
-    }
-    @Test(priority = 4)
-    public void OpenEmail()
-    {
-        util.waitUntil(driver,By.cssSelector(".Cp div table tbody tr"));
-        WebElement email=driver.findElement(By.cssSelector(".Cp div table tbody tr"));
-        email.click();
-        WebElement body=driver.findElement(By.xpath("//*[contains(text(), 'Test Email Body')]"));
-        String bodystr =body.getText();
-
-        Assert.assertEquals(bodystr.substring(bodystr.indexOf("Test")),"Test Email Body");
+        SearchPage searchPage=new SearchPage(driver);
+        searchPage.clearSearchBar();
+        searchPage.searchNewKeyword("Software Testing new");
+        Assert.assertTrue(searchPage.AssertOnSearchResultsExistence()); //Assert that number of results exist on UI
+        searchPage.NavigateToPage2(); //Scroll down and go to the next page
+        softAssert.assertTrue(searchPage.AssertThatNumberOfSearchResultsIsEqual(),"Number of results on page 2 not equal on page 3"); //Validate if the number of results on page 2 is equal to page 3 or not
+        util.scrollUntil(driver.findElement(By.xpath("//*[@id='bres']/div/div/div/div/div[5]")));
+        Assert.assertTrue(driver.findElements(By.xpath("//*[@id='bres']/div/div/div/div/div[5]")).size()>0); //Validate there are different search suggestions displayed at the end of the page
     }
 
 }

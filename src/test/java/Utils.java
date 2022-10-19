@@ -7,6 +7,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
 
+import java.io.File;
 import java.sql.Driver;
 import java.util.Random;
 
@@ -18,7 +19,11 @@ public class Utils {
     @BeforeClass
     public WebDriver setup()
     {
-        System.setProperty("webdriver.chrome.driver", "C:\\Users\\moham\\Desktop\\chromedriver.exe");
+        String userdir = System.getProperty("user.dir");
+
+        System.setProperty("webdriver.chrome.driver", userdir + File.separator + "chromedriver.exe");
+
+
         return driver=new ChromeDriver();
     }
     public void scrollUntil(WebElement element)

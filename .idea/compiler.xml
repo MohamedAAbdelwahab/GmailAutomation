@@ -7,6 +7,8 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="SeleniumTrainning" />
+        <module name="Seleniumtrainning" />
+        <module name="Foodics Asssignment" />
       </profile>
     </annotationProcessing>
   </component>
